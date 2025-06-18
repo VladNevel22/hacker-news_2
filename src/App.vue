@@ -21,7 +21,7 @@ onMounted(() => {
 <style>
 button {
 	border-radius: 10px;
-	padding: 5px 10px;
+	padding: 10px 15px;
 	cursor: pointer;
 }
 button:hover {
@@ -32,11 +32,18 @@ a {
 	color: black;
 	text-decoration: none;
 }
-a:hover {
-	border: 1px solid black;
-	border-radius: 5px;
-	padding: 3px;
-	background-color: black;
-	color: azure;
+
+li {
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	padding: 15px;
+	margin: 10px 0;
+	transition: transform 0.2s;
+	width: 50%;
+	list-style-type: none;
+}
+li:hover {
+	transform: scale(1.01);
 }
 </style>
