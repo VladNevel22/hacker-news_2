@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import CommentTree from './CommentTree.vue'
 
 const props = defineProps({
@@ -14,14 +14,19 @@ const comments = ref([])
 async function loadComments() {
 	if (!props.commentIds || props.commentIds.length === 0) return
 
-	const commentPromises = props.commentIds.map(async id => {
-		const res = await fetch(
-			`https://hacker-news.firebaseio.com/v0/item/${id}.json`
-		)
-		return await res.json()
-	})
+	try {
+		const commentPromises = props.commentIds.map(async id => {
+			const res = await fetch(
+				`https://hacker-news.firebaseio.com/v0/item/${id}.json`
+			)
+			if (!res.ok) throw new Error(`Ошибка загрузки комментария ${id}`)
+			return await res.json()
+		})
 
-	comments.value = await Promise.all(commentPromises)
+		comments.value = await Promise.all(commentPromises)
+	} catch (err) {
+		console.error('Ошибка при загрузке комментариев:', err)
+	}
 }
 
 onMounted(loadComments)

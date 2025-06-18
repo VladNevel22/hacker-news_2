@@ -3,21 +3,24 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentTree from './CommentTree.vue'
 
+const route = useRoute()
+const article = ref(null)
+
+const commentKey = ref(0)
 function reloadComments() {
 	commentKey.value++
 }
 
-const commentKey = ref(0)
-const route = useRoute()
-const article = ref(null)
-
-// Загружаем новость по ID из URL
 onMounted(async () => {
-	const id = route.params.id
-	const response = await fetch(
-		`https://hacker-news.firebaseio.com/v0/item/${id}.json`
-	)
-	article.value = await response.json()
+	try {
+		const id = route.params.id
+		const response = await fetch(
+			`https://hacker-news.firebaseio.com/v0/item/${id}.json`
+		)
+		article.value = await response.json()
+	} catch (err) {
+		console.error('Ошибка при загрузке новости:', err)
+	}
 })
 </script>
 
@@ -37,8 +40,8 @@ onMounted(async () => {
 
 		<h3>Комментарии</h3>
 		<button @click="reloadComments">Обновить комментарии</button>
-
 		<CommentTree :key="commentKey" :commentIds="article.kids" />
 	</div>
+
 	<div v-else>Загрузка...</div>
 </template>
