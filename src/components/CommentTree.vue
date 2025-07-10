@@ -23,7 +23,9 @@ async function loadComments() {
 			return await res.json()
 		})
 
-		comments.value = await Promise.all(commentPromises)
+		comments.value = (await Promise.all(commentPromises)).filter(
+			comment => comment && !comment.deleted
+		)
 	} catch (err) {
 		console.error('Ошибка при загрузке комментариев:', err)
 	}
@@ -34,15 +36,10 @@ onMounted(loadComments)
 
 <template>
 	<ul>
-		<li
-			v-for="comment in comments"
-			:key="comment.id"
-			v-if="comment && !comment.deleted"
-		>
+		<li v-for="comment in comments" :key="comment.id">
 			<div v-html="comment.text" class="comment-text" />
 			<small>— {{ comment.by }}</small>
 
-			<!-- Вложенные комментарии -->
 			<CommentTree v-if="comment.kids" :commentIds="comment.kids" />
 		</li>
 	</ul>
@@ -54,8 +51,13 @@ onMounted(loadComments)
 	padding-left: 10px;
 	border-left: 2px solid #ccc;
 }
+
 ul {
 	list-style: none;
 	padding-left: 10px;
+}
+
+li {
+	margin: 15px 0;
 }
 </style>

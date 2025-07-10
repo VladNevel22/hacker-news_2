@@ -1,23 +1,25 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useNewsStore } from '/stores/news'
 
-// создаём подключение к нашему хранилищу
 const newsStore = useNewsStore()
+let intervalId = null
 
 onMounted(() => {
 	newsStore.fetchNews()
-
-	setInterval(() => {
+	intervalId = setInterval(() => {
 		newsStore.fetchNews()
 	}, 60000)
+})
+
+onUnmounted(() => {
+	if (intervalId) clearInterval(intervalId)
 })
 </script>
 
 <template>
 	<router-view />
 </template>
-
 <style>
 button {
 	border-radius: 10px;
@@ -45,5 +47,7 @@ li {
 }
 li:hover {
 	transform: scale(1.01);
+	box-shadow: 0 5px 10px rgba(1, 0, 0, 0.1);
+	background: rgb(218, 217, 217);
 }
 </style>
