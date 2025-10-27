@@ -1,15 +1,21 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, nextTick } from 'vue'
 import { useNewsStore } from '/stores/news'
+import { attachRippleEffect, injectRippleStyles } from './utils/rippleEffect'
 
 const newsStore = useNewsStore()
 let intervalId = null
 
-onMounted(() => {
+onMounted(async () => {
 	newsStore.fetchNews()
 	intervalId = setInterval(() => {
 		newsStore.fetchNews()
 	}, 60000)
+
+	// Включаем ripple эффект
+	injectRippleStyles()
+	await nextTick()
+	attachRippleEffect('.ripple')
 })
 
 onUnmounted(() => {
@@ -18,36 +24,40 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<router-view />
+	<div id="app">
+		<router-view />
+	</div>
 </template>
+
 <style>
-button {
-	border-radius: 10px;
-	padding: 10px 15px;
-	cursor: pointer;
-}
-button:hover {
-	background-color: grey;
-	color: white;
-}
-a {
-	color: black;
-	text-decoration: none;
+#app {
+	min-height: 100vh;
+	background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-li {
-	background: white;
-	border-radius: 8px;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-	padding: 15px;
-	margin: 10px 0;
-	transition: transform 0.2s;
-	width: 50%;
-	list-style-type: none;
+/* Глобальные стили для анимаций */
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.3s ease;
 }
-li:hover {
-	transform: scale(1.01);
-	box-shadow: 0 5px 10px rgba(1, 0, 0, 0.1);
-	background: rgb(218, 217, 217);
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-enter-from {
+	transform: translateX(-20px);
+	opacity: 0;
+}
+
+.slide-leave-to {
+	transform: translateX(20px);
+	opacity: 0;
 }
 </style>

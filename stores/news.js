@@ -13,6 +13,7 @@ export const useNewsStore = defineStore('news', {
 			try {
 				this.isLoading = true
 				const response = await fetch(
+					//сначал ждем результат , потом работаем с массивом
 					'https://hacker-news.firebaseio.com/v0/newstories.json'
 				)
 				const ids = await response.json()
